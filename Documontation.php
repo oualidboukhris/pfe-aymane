@@ -5,27 +5,29 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Skydash Admin</title>
+  <title>Fitnesse</title>
   <!-- plugins:css -->
-  <link rel="stylesheet" href="../../vendors/feather/feather.css">
-  <link rel="stylesheet" href="../../vendors/ti-icons/css/themify-icons.css">
-  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="vendors/feather/feather.css">
+  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
   <!-- endinject -->
   <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" type="text/css" href="js/select.dataTables.min.css">
   <!-- End plugin css for this page -->
   <!-- inject:css -->
-  <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
+  <link rel="stylesheet" href="css/vertical-layout-light/style.css">
   <!-- endinject -->
-  <link rel="shortcut icon" href="../../images/favicon.png" />
+  <link rel="shortcut icon" href="images/bodybuilder-holding-dumbbell-gym-vector-silhouette-black-color-illustration-18_666870-10102.avif" />
 </head>
-
 <body>
   <div class="container-scroller">
-    <!-- partial:../../partials/_navbar.html -->
+    <!-- partial:partials/_navbar.html -->
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        <a class="navbar-brand brand-logo mr-5" href="../../index.html"><img src="../../images/logo.svg" class="mr-2" alt="logo"/></a>
-        <a class="navbar-brand brand-logo-mini" href="../../index.html"><img src="../../images/logo-mini.svg" alt="logo"/></a>
+        <a class="navbar-brand brand-logo mr-5" href="index.html"><img src="images/bodybuilder-holding-dumbbell-gym-vector-silhouette-black-color-illustration-18_666870-10102.avif" class="mr-2" alt="logo"/><H4>MIAGE KSAR</H1></a>
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/bodybuilder-holding-dumbbell-gym-vector-silhouette-black-color-illustration-18_666870-10102.avif" alt="logo"/></a>
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
         <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -94,7 +96,7 @@
           </li>
           <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <img src="../../images/faces/face28.jpg" alt="profile"/>
+            
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
               <a class="dropdown-item">
@@ -120,7 +122,7 @@
     </nav>
     <!-- partial -->
     <div class="container-fluid page-body-wrapper">
-      <!-- partial:../../partials/_settings-panel.html -->
+      <!-- partial:partials/_settings-panel.html -->
       <div class="theme-setting-wrapper">
         <div id="settings-trigger"><i class="ti-settings"></i></div>
         <div id="theme-settings" class="settings-panel">
@@ -234,7 +236,7 @@
             </div>
             <ul class="chat-list">
               <li class="list active">
-                <div class="profile"><img src="../../images/faces/face1.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="images/faces/face1.jpg" alt="image"><span class="online"></span></div>
                 <div class="info">
                   <p>Thomas Douglas</p>
                   <p>Available</p>
@@ -242,7 +244,7 @@
                 <small class="text-muted my-auto">19 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face2.jpg" alt="image"><span class="offline"></span></div>
+                <div class="profile"><img src="images/faces/face2.jpg" alt="image"><span class="offline"></span></div>
                 <div class="info">
                   <div class="wrapper d-flex">
                     <p>Catherine</p>
@@ -253,7 +255,7 @@
                 <small class="text-muted my-auto">23 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face3.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="images/faces/face3.jpg" alt="image"><span class="online"></span></div>
                 <div class="info">
                   <p>Daniel Russell</p>
                   <p>Available</p>
@@ -261,7 +263,7 @@
                 <small class="text-muted my-auto">14 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face4.jpg" alt="image"><span class="offline"></span></div>
+                <div class="profile"><img src="images/faces/face4.jpg" alt="image"><span class="offline"></span></div>
                 <div class="info">
                   <p>James Richardson</p>
                   <p>Away</p>
@@ -269,7 +271,7 @@
                 <small class="text-muted my-auto">2 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face5.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="images/faces/face5.jpg" alt="image"><span class="online"></span></div>
                 <div class="info">
                   <p>Madeline Kennedy</p>
                   <p>Available</p>
@@ -277,7 +279,7 @@
                 <small class="text-muted my-auto">5 min</small>
               </li>
               <li class="list">
-                <div class="profile"><img src="../../images/faces/face6.jpg" alt="image"><span class="online"></span></div>
+                <div class="profile"><img src="images/faces/face6.jpg" alt="image"><span class="online"></span></div>
                 <div class="info">
                   <p>Sarah Graves</p>
                   <p>Available</p>
@@ -290,200 +292,235 @@
         </div>
       </div>
       <!-- partial -->
-      <!-- partial:../../partials/_sidebar.html -->
+      <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav">
-          <li class="nav-item">
-            <a class="nav-link" href="../../index.html">
-              <i class="icon-grid menu-icon"></i>
-              <span class="menu-title">Dashboard</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-              <i class="icon-layout menu-icon"></i>
-              <span class="menu-title">UI Elements</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-basic">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/buttons.html">Buttons</a></li>
-                <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/dropdowns.html">Dropdowns</a></li>
-                <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/typography.html">Typography</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
-              <i class="icon-columns menu-icon"></i>
-              <span class="menu-title">Form elements</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="form-elements">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"><a class="nav-link" href="../../pages/forms/basic_elements.html">Basic Elements</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
-              <i class="icon-bar-graph menu-icon"></i>
-              <span class="menu-title">Charts</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="charts">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="../../pages/charts/chartjs.html">ChartJs</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
-              <i class="icon-grid-2 menu-icon"></i>
-              <span class="menu-title">Tables</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="tables">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="../../pages/tables/basic-table.html">Basic table</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
-              <i class="icon-contract menu-icon"></i>
-              <span class="menu-title">Icons</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="icons">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="../../pages/icons/mdi.html">Mdi icons</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-              <i class="icon-head menu-icon"></i>
-              <span class="menu-title">User Pages</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="auth">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/login.html"> Login </a></li>
-                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/register.html"> Register </a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#error" aria-expanded="false" aria-controls="error">
-              <i class="icon-ban menu-icon"></i>
-              <span class="menu-title">Error pages</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="error">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/error-404.html"> 404 </a></li>
-                <li class="nav-item"> <a class="nav-link" href="../../pages/samples/error-500.html"> 500 </a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../../pages/documentation/documentation.html">
-              <i class="icon-paper menu-icon"></i>
-              <span class="menu-title">Documentation</span>
-            </a>
-          </li>
+  <ul class="nav">
+
+    <li class="nav-item">
+      <a class="nav-link" href="index.html">
+        <i class="icon-grid menu-icon"></i>
+        <span class="menu-title">Dashboard</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="customers.php">
+        <i class="icon-head menu-icon"></i>
+        <span class="menu-title">customers</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="memberships.php">
+        <i class="icon-columns menu-icon"></i>
+        <span class="menu-title">memberships</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="payment.php">
+         <i class="icon-grid-2 menu-icon"></i>
+        <span class="menu-title">payment</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="subscription.php">
+        <i class="icon-contract menu-icon"></i>
+        <span class="menu-title">Subscription</span>
+      </a>
+    </li>
+      <div class="collapse" id="auth">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html">User</a></li>
+          <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html">Admin</a></li>
         </ul>
-      </nav>
+      </div>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="pages/documentation/documentation.html">
+        <i class="icon-paper menu-icon"></i>
+        <span class="menu-title">Documentation</span>
+      </a>
+    </li>
+
+  </ul>
+</nav>
+
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
-            <div class="col-lg-6 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Line chart</h4>
-                  <canvas id="lineChart"></canvas>
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold">Welcome MIAGE</h3>
+                </div>
+                <div class="col-12 col-xl-4">
+                 <div class="justify-content-end d-flex">
+                  <div class="dropdown flex-md-grow-1 flex-xl-grow-0">
+                    
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuDate2">
+                      <a class="dropdown-item" href="#">January - March</a>
+                      <a class="dropdown-item" href="#">March - June</a>
+                      <a class="dropdown-item" href="#">June - August</a>
+                      <a class="dropdown-item" href="#">August - November</a>
+                    </div>
+                  </div>
+                 </div>
                 </div>
               </div>
             </div>
-            <div class="col-lg-6 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Bar chart</h4>
-                  <canvas id="barChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-lg-6 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Area chart</h4>
-                  <canvas id="areaChart"></canvas>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-6 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Doughnut chart</h4>
-                  <canvas id="doughnutChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-lg-6 grid-margin grid-margin-lg-0 stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Pie chart</h4>
-                  <canvas id="pieChart"></canvas>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-6 grid-margin grid-margin-lg-0 stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Scatter chart</h4>
-                  <canvas id="scatterChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "gym_subscription";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("Échec de la connexion : " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['action'])) {
+        if ($_POST['action'] == "ajouter") {
+            $poste = $_POST['poste'];
+            $probleme = $_POST['probleme'];
+            $date = $_POST['date'];
+            $description = $_POST['description'];
+            $solution = $_POST['solution'];
+            
+            $sql = "INSERT INTO problemes (poste, probleme, date, description, solution) VALUES ('$poste', '$probleme', '$date', '$description', '$solution')";
+            $conn->query($sql);
+        }
+        elseif ($_POST['action'] == "supprimer") {
+            $id = $_POST['id'];
+            $sql = "DELETE FROM problemes WHERE id=$id";
+            $conn->query($sql);
+        }
+        elseif ($_POST['action'] == "modifier") {
+            $id = $_POST['id'];
+            $poste = $_POST['poste'];
+            $probleme = $_POST['probleme'];
+            $date = $_POST['date'];
+            $description = $_POST['description'];
+            $solution = $_POST['solution'];
+            
+            $sql = "UPDATE problemes SET poste='$poste', probleme='$probleme', date='$date', description='$description', solution='$solution' WHERE id=$id";
+            $conn->query($sql);
+        }
+    }
+}
+
+$result = $conn->query("SELECT * FROM problemes");
+$conn->close();
+?>
+<body>
+    <h2>Gestion des Problèmes - Salle TP2</h2>
+    <form method="post">
+        <input type="hidden" name="action" value="ajouter">
+        <select name="poste">
+            <option value="">Sélectionner un poste</option>
+            <?php for ($i = 1; $i <= 17; $i++) echo "<option value='PC-$i'>PC-$i</option>"; ?>
+        </select>
+        <select name="probleme">
+            <option value="">Problème</option>
+            <option value="Écran noir">Écran noir</option>
+            <option value="Clavier">Clavier</option>
+            <option value="Connexion Internet">Connexion Internet</option>
+        </select>
+        <input type="date" name="date">
+        <input type="text" name="description" placeholder="Description">
+        <input type="text" name="solution" placeholder="Solution">
+        <button type="submit">Ajouter</button>
+    </form>
+    <table border="1">
+        <tr>
+            <th>Poste</th>
+            <th>Problème</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Solution</th>
+            <th>Modifier</th>
+            <th>Supprimer</th>
+        </tr>
+        <?php while ($row = $result->fetch_assoc()) { ?>
+            <tr>
+                <td><?= $row['poste'] ?></td>
+                <td><?= $row['probleme'] ?></td>
+                <td><?= $row['date'] ?></td>
+                <td><?= $row['description'] ?></td>
+                <td><?= $row['solution'] ?></td>
+                <td>
+                    <form method="post">
+                        <input type="hidden" name="action" value="modifier">
+                        <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                        <input type="text" name="poste" value="<?= $row['poste'] ?>">
+                        <input type="text" name="probleme" value="<?= $row['probleme'] ?>">
+                        <input type="date" name="date" value="<?= $row['date'] ?>">
+                        <input type="text" name="description" value="<?= $row['description'] ?>">
+                        <input type="text" name="solution" value="<?= $row['solution'] ?>">
+                        <button type="submit">Modifier</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post">
+                        <input type="hidden" name="action" value="supprimer">
+                        <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                        <button type="submit">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        <?php } ?>
+    </table>
+</body>
+</html>
+
+
         <!-- content-wrapper ends -->
-        <!-- partial:../../partials/_footer.html -->
+        <!-- partial:partials/_footer.html -->
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
             <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021.  Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
             <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
           </div>
-        </footer>
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Distributed by <a href="https://www.themewagon.com/" target="_blank">Themewagon</a></span> 
+          </div>
+        </footer> 
         <!-- partial -->
       </div>
       <!-- main-panel ends -->
-    </div>
+    </div>   
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
+
   <!-- plugins:js -->
-  <script src="../../vendors/js/vendor.bundle.base.js"></script>
+  <script src="vendors/js/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page -->
-  <script src="../../vendors/chart.js/Chart.min.js"></script>
+  <script src="vendors/chart.js/Chart.min.js"></script>
+  <script src="vendors/datatables.net/jquery.dataTables.js"></script>
+  <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+  <script src="js/dataTables.select.min.js"></script>
+
   <!-- End plugin js for this page -->
   <!-- inject:js -->
-  <script src="../../js/off-canvas.js"></script>
-  <script src="../../js/hoverable-collapse.js"></script>
-  <script src="../../js/template.js"></script>
-  <script src="../../js/settings.js"></script>
-  <script src="../../js/todolist.js"></script>
+  <script src="js/off-canvas.js"></script>
+  <script src="js/hoverable-collapse.js"></script>
+  <script src="js/template.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/todolist.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="../../js/chart.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/Chart.roundedBarCharts.js"></script>
   <!-- End custom js for this page-->
 </body>
 
 </html>
+
