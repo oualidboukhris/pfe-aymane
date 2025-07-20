@@ -110,14 +110,14 @@ gulp.task('injectLayoutStyles', function () {
 
 /*replace image path and linking after injection*/
 gulp.task('replacePath', function(){
-    var replacePath1 = gulp.src(['./pages/*/*.html'], { base: "./" })
+    var replacePath1 = gulp.src(['./pagess/*/*.html'], { base: "./" })
         .pipe(replace('="images/', '="../../images/'))
-        .pipe(replace('href="pages/', 'href="../../pages/'))
+        .pipe(replace('href="pages/', 'href="../../pagess/'))
         .pipe(replace('href="index.html"', 'href="../../index.html"'))
         .pipe(gulp.dest('.'));
-    var replacePath2 = gulp.src(['./pages/*.html'], { base: "./" })
+    var replacePath2 = gulp.src(['./pagess/*.html'], { base: "./" })
         .pipe(replace('="images/', '="../images/'))
-        .pipe(replace('"pages/', '"../pages/'))
+        .pipe(replace('"pages/', '"../pagess/'))
         .pipe(replace('href="index.html"', 'href="../index.html"'))
         .pipe(gulp.dest('.'));
     var replacePath3 = gulp.src(['./*/index.html'], { base: "./" })
