@@ -56,6 +56,7 @@ session_start();
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .pagination .page-item.active .page-link,
     .jsgrid .jsgrid-pager .page-item.active .page-link,
     .jsgrid .jsgrid-pager .active.jsgrid-pager-nav-button .page-link,
@@ -239,54 +240,75 @@ $subscriptions = $conn->query("SELECT subscription_id, name FROM subscriptions")
 
 // Traitement formulaire ajout adhésion
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if (isset($_POST['action'])) {
-        if ($_POST['action'] === "ajouter_membership") {
-            $customer_id = $_POST['customer_id'];
-            $subscription_id = $_POST['subscription_id'];
-            $start_date = $_POST['start_date'];
-            $end_date = $_POST['end_date'];
-            $status = $_POST['status'];
+  if (isset($_POST['action'])) {
+    if ($_POST['action'] === "ajouter_membership") {
+      $customer_id = $_POST['customer_id'];
+      $subscription_id = $_POST['subscription_id'];
+      $start_date = $_POST['start_date'];
+      $end_date = $_POST['end_date'];
+      $status = $_POST['status'];
 
-            $stmt = $conn->prepare("INSERT INTO memberships (customer_id, subscription_id, start_date, end_date, status) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("iisss", $customer_id, $subscription_id, $start_date, $end_date, $status);
-            if ($stmt->execute()) {
-                $message = "✅ Adhésion ajoutée avec succès.";
-            } else {
-                $message = "❌ Erreur : " . $stmt->error;
-            }
-            $stmt->close();
-        } elseif ($_POST['action'] === "modifier_membership") {
-            $membership_id = $_POST['membership_id'];
-            $customer_id = $_POST['customer_id'];
-            $subscription_id = $_POST['subscription_id'];
-            $start_date = $_POST['start_date'];
-            $end_date = $_POST['end_date'];
-            $status = $_POST['status'];
+      $checkStmt = $conn->prepare("SELECT customer_id FROM customers WHERE customer_id = ?");
+      $checkStmt->bind_param("i", $customer_id);
+      $checkStmt->execute();
+      $checkStmt->store_result();
 
-            $stmt = $conn->prepare("UPDATE memberships SET customer_id=?, subscription_id=?, start_date=?, end_date=?, status=? WHERE membership_id=?");
-            $stmt->bind_param("iisssi", $customer_id, $subscription_id, $start_date, $end_date, $status, $membership_id);
-            if ($stmt->execute()) {
-                $message = "✅ Adhésion modifiée avec succès.";
-            } else {
-                $message = "❌ Erreur : " . $stmt->error;
-            }
-            $stmt->close();
+      if ($checkStmt->num_rows > 0) {
+
+        $stmt = $conn->prepare("INSERT INTO memberships (customer_id, subscription_id, start_date, end_date, status) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iisss", $customer_id, $subscription_id, $start_date, $end_date, $status);
+        if ($stmt->execute()) {
+          $message = "✅ Adhésion ajoutée avec succès.";
+        } else {
+          $message = "❌ Erreur : " . $stmt->error;
         }
+        $stmt->close();
+      } else {
+        $message = "❌ Erreur : Aucun client trouvé avec cet ID ($customer_id).";
+
+      }
+
+      $checkStmt->close();
     }
+
+    if ($_POST['action'] === "modifier_membership") {
+      $membership_id = $_POST['membership_id'];
+      $customer_id = $_POST['customer_id'];
+      $subscription_id = $_POST['subscription_id'];
+      $start_date = $_POST['start_date'];
+      $end_date = $_POST['end_date'];
+      $status = $_POST['status'];
+
+      $stmt = $conn->prepare("UPDATE memberships SET customer_id=?, subscription_id=?, start_date=?, end_date=?, status=? WHERE membership_id=?");
+      $stmt->bind_param("iisssi", $customer_id, $subscription_id, $start_date, $end_date, $status, $membership_id);
+      if ($stmt->execute()) {
+        $message = "✅ Adhésion modifiée avec succès.";
+      } else {
+        $message = "❌ Erreur : " . $stmt->error;
+      }
+      $stmt->close();
+    }
+    if ($_POST['action'] === "supprimer_membership") {
+
+      $membership_id = (int) $_POST['membership_id'];
+
+      // Prepare and execute deletion
+      $stmt = $conn->prepare("DELETE FROM memberships WHERE membership_id = ?");
+      $stmt->bind_param("i", $membership_id);
+
+      if ($stmt->execute()) {
+        $message = "✅ Adhésion supprimée avec succès.";
+      } else {
+        $message = "❌ Erreur lors de la suppression : " . $stmt->error;
+      }
+
+      $stmt->close();
+    }
+
+  }
 }
 
-// Traitement de la suppression
-if (isset($_GET['delete'])) {
-    $membership_id = $_GET['delete'];
-    $stmt = $conn->prepare("DELETE FROM memberships WHERE membership_id = ?");
-    $stmt->bind_param("i", $membership_id);
-    if ($stmt->execute()) {
-        $message = "✅ Adhésion supprimée avec succès.";
-    } else {
-        $message = "❌ Erreur : " . $stmt->error;
-    }
-    $stmt->close();
-}
+
 
 // Récupération des adhésions
 $adhesions = $conn->query("
@@ -308,11 +330,10 @@ $adhesions = $conn->query("
       <!-- partial -->
       <!-- partial:partials/_sidebar.html -->
       <?php include '../container/sidebar.html'; ?>
-      <?php require '../database/db.php'; ?>
       <!--  -->
       <div class="main-panel">
         <div class="content-wrapper fade-in">
-        <?php if (!empty($message)) { ?>
+          <?php if (!empty($message)) { ?>
             <div
               class="alert <?= strpos($message, '✅') !== false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show"
               style="position:absolute; right:25px;" role="alert">
@@ -354,7 +375,7 @@ $adhesions = $conn->query("
                                             <option value=\"\">-- Sélectionner un client --</option>';
           $clients = $conn->query("SELECT customer_id, first_name, last_name FROM customers");
           while ($c = $clients->fetch_assoc()) {
-            $addModals .= '<option value=\"' . $c['customer_id'] . '\">' . htmlspecialchars($c['first_name'] . ' ' . $c['last_name']) . '</option>';
+            $addModals .= '<option value="' . $c['customer_id'] . '">' . htmlspecialchars($c['first_name'] . ' ' . $c['last_name']) . '</option>';
           }
           $addModals .= '
                                           </select>
@@ -368,7 +389,7 @@ $adhesions = $conn->query("
                                             <option value=\"\">-- Sélectionner un abonnement --</option>';
           $subscriptions = $conn->query("SELECT subscription_id, name FROM subscriptions");
           while ($s = $subscriptions->fetch_assoc()) {
-            $addModals .= '<option value=\"' . $s['subscription_id'] . '\">' . htmlspecialchars($s['name']) . '</option>';
+            $addModals .= '<option value="' . $s['subscription_id'] . '">' . htmlspecialchars($s['name']) . '</option>';
           }
           $addModals .= '
                                           </select>
@@ -394,19 +415,18 @@ $adhesions = $conn->query("
                                       <div class="form-group">
                                         <label>Statut</label>
                                         <select class="form-control form-control-sm"" name="status" required>
-                                          <option value=\"actif\">Actif</option>
-                                          <option value=\"expiré\">Expiré</option>
-                                          <option value=\"suspendu\">Suspendu</option>
+                                          <option value="actif">Actif</option>
+                                          <option value="expiré">Expiré</option>
+                                          <option value="suspendu">Suspendu</option>
                                         </select>
                                       </div>
                                     
-
                               </div>
 
                               <div class="modal-footer">
                                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
                                     <button type="submit" class="btn btn-dark">
-                                      <i class=\"fas fa-save\"></i> Ajouter l\'Adhésion
+                                      <i class="fas fa-save"></i> Ajouter l\'Adhésion
                                     </button>
                                   </div>      
                               </div>
@@ -493,64 +513,64 @@ $adhesions = $conn->query("
               </div> -->
 
           <!-- table memberships -->
-          
-              <div class="table-responsive rounded mt-3">
-                <table class="table bg-white" id="membershipsTable">
-                  <thead class="thead-dark">
+
+          <div class="table-responsive rounded mt-3">
+            <table class="table bg-white" id="membershipsTable">
+              <thead class="thead-dark">
+                <tr>
+                  <th>id</th>
+                  <th>Client</th>
+                  <th>Abonnement</th>
+                  <th>Date de début</th>
+                  <th>Date de fin</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="membershipsTableBody">
+                <?php
+                $modals = '';
+                if ($adhesions->num_rows > 0):
+                  // Pour les listes déroulantes dans les modales, on récupère tous les clients et abonnements une fois
+                  $all_clients = $conn->query("SELECT customer_id, first_name, last_name FROM customers");
+                  $all_subs = $conn->query("SELECT subscription_id, name FROM subscriptions");
+                  while ($row = $adhesions->fetch_assoc()): ?>
                     <tr>
-                      <th>id</th>
-                      <th>Client</th>
-                      <th>Abonnement</th>
-                      <th>Date de début</th>
-                      <th>Date de fin</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="membershipsTableBody">
-                    <?php
-                    $modals = '';
-                    if ($adhesions->num_rows > 0):
-                      // Pour les listes déroulantes dans les modales, on récupère tous les clients et abonnements une fois
-                      $all_clients = $conn->query("SELECT customer_id, first_name, last_name FROM customers");
-                      $all_subs = $conn->query("SELECT subscription_id, name FROM subscriptions");
-                      while ($row = $adhesions->fetch_assoc()): ?>
-                        <tr>
-                          <td><?= $row['membership_id'] ?></td>
-                          <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
-                          <td><?= htmlspecialchars($row['subscription_name']) ?></td>
-                          <td><?= date('d/m/Y', strtotime($row['start_date'])) ?></td>
-                          <td><?= date('d/m/Y', strtotime($row['end_date'])) ?></td>
-                          <td>
-                            <?php
-                            $status = $row['status'];
-                            $badgeClass = match ($status) {
-                              'actif' => 'bg-success',
-                              'suspendu' => 'bg-warning',
-                              'expiré' => 'bg-danger',
-                              default => 'bg-secondary'
-                            };
-                            ?>
-                            <span class="badge <?= $badgeClass ?>">
-                              <?= ucfirst($row['status']) ?>
-                            </span>
-                          </td>
-                          <td>
-                            <div class="actions-buttons">
-                              <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#editModal<?= $row['membership_id'] ?>">
-                                <i class="bi bi-pencil-square"></i>
-                              </button>
-                              <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal<?= $row['membership_id'] ?>">
-                                <i class="bi bi-trash"></i>
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                      <td><?= $row['membership_id'] ?></td>
+                      <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
+                      <td><?= htmlspecialchars($row['subscription_name']) ?></td>
+                      <td><?= date('d/m/Y', strtotime($row['start_date'])) ?></td>
+                      <td><?= date('d/m/Y', strtotime($row['end_date'])) ?></td>
+                      <td>
                         <?php
-                        //dalete modas memeberships
-                        $modals .= '
+                        $status = $row['status'];
+                        $badgeClass = match ($status) {
+                          'actif' => 'bg-success',
+                          'suspendu' => 'bg-warning',
+                          'expiré' => 'bg-danger',
+                          default => 'bg-secondary'
+                        };
+                        ?>
+                        <span class="badge <?= $badgeClass ?>">
+                          <?= ucfirst($row['status']) ?>
+                        </span>
+                      </td>
+                      <td>
+                        <div class="actions-buttons">
+                          <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#editModal<?= $row['membership_id'] ?>">
+                            <i class="bi bi-pencil-square"></i>
+                          </button>
+                          <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal<?= $row['membership_id'] ?>">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <?php
+                    //dalete modals memeberships
+                    $modals .= '
                                         <div class="modal fade" id="deleteModal' . $row['membership_id'] . '" tabindex="-1" aria-labelledby="deleteModalLabel' . $row['membership_id'] . '" aria-hidden="true">
                                           <div class="modal-dialog">
                                             <form method="POST" class="modal-content">
@@ -576,8 +596,8 @@ $adhesions = $conn->query("
                                         </div>';
 
 
-                        // Update modals memberships
-                        $modals .= '
+                    // Update modals memberships
+                    $modals .= '
                                     <div class="modal fade" id="editModal' . $row['membership_id'] . '" tabindex="-1" aria-labelledby="editModalLabel' . $row['membership_id'] . '" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -592,22 +612,22 @@ $adhesions = $conn->query("
                                             <div class="mb-3">
                                                 <label class="form-label">Client</label>
                                                 <select class="form-control" name="customer_id" required>';
-                        $all_clients->data_seek(0);
-                        while ($c = $all_clients->fetch_assoc()) {
-                          $selected = ($c['customer_id'] == $row['customer_id']) ? 'selected' : '';
-                          $modals .= '<option value="' . $c['customer_id'] . '" ' . $selected . '>' . htmlspecialchars($c['first_name'] . ' ' . $c['last_name']) . '</option>';
-                        }
-                        $modals .= '</select>
+                    $all_clients->data_seek(0);
+                    while ($c = $all_clients->fetch_assoc()) {
+                      $selected = ($c['customer_id'] == $row['customer_id']) ? 'selected' : '';
+                      $modals .= '<option value="' . $c['customer_id'] . '" ' . $selected . '>' . htmlspecialchars($c['first_name'] . ' ' . $c['last_name']) . '</option>';
+                    }
+                    $modals .= '</select>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Abonnement</label>
                                                 <select class="form-control" name="subscription_id" required>';
-                        $all_subs->data_seek(0);
-                        while ($s = $all_subs->fetch_assoc()) {
-                          $selected = ($s['subscription_id'] == $row['subscription_id']) ? 'selected' : '';
-                          $modals .= '<option value="' . $s['subscription_id'] . '" ' . $selected . '>' . htmlspecialchars($s['name']) . '</option>';
-                        }
-                        $modals .= '</select>
+                    $all_subs->data_seek(0);
+                    while ($s = $all_subs->fetch_assoc()) {
+                      $selected = ($s['subscription_id'] == $row['subscription_id']) ? 'selected' : '';
+                      $modals .= '<option value="' . $s['subscription_id'] . '" ' . $selected . '>' . htmlspecialchars($s['name']) . '</option>';
+                    }
+                    $modals .= '</select>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Date de début</label>
@@ -634,23 +654,23 @@ $adhesions = $conn->query("
                                         </div>
                                     </div>
                                     </div>';
-                      endwhile;
+                  endwhile;
 
 
-                      $all_clients->close();
-                      $all_subs->close();
-                    else: ?>
-                      <tr>
-                        <td colspan="7" class="text-center">Aucune adhésion trouvée.</td>
-                      </tr>
-                    <?php endif; ?>
-                  </tbody>
-                </table>
-              </div>
-              <nav class="d-flex justify-content-center mt-3" aria-label="Page navigation">
-                <ul class="pagination" id="pagination"></ul>
-              </nav>
-           
+                  $all_clients->close();
+                  $all_subs->close();
+                else: ?>
+                  <tr>
+                    <td colspan="7" class="text-center">Aucune adhésion trouvée.</td>
+                  </tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+          <nav class="d-flex justify-content-center mt-3" aria-label="Page navigation">
+            <ul class="pagination" id="pagination"></ul>
+          </nav>
+
 
 
         </div>
@@ -757,7 +777,7 @@ $adhesions = $conn->query("
     displayPage(currentPage);
 
   </script>
-  
+
   <script src="../vendors/js/vendor.bundle.base.js"></script>
   <script src="../vendors/chart.js/chart.umd.js"></script>
   <script src="../vendors/chart.js/Chart.min.js"></script>

@@ -230,11 +230,9 @@ $errors = [];
 $oldValues = [];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
-
-  $action = $_POST['action'];
-  //Ajouter un client
+    $action = $_POST['action'];
+    //Ajouter un client
   if ($action === "ajouter_client") {
-
     // Trim all input
     foreach ($_POST as $key => $value) {
       $oldValues[$key] = htmlspecialchars(trim($value));
@@ -388,7 +386,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
                     </div>
                   </div>';
           ?>
-          
+
          
               <div class="table-responsive rounded mt-3 ">
                 <table class="table bg-white" id="customerTable">

@@ -100,6 +100,7 @@ session_start();
       border-color: #3C424D;
       color: #ffffff;
     }
+
     .stats-card {
       background: white;
       border-radius: 15px;
@@ -236,65 +237,76 @@ require '../database/db.php';
 
 // Traitement ajout de paiement
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    if (isset($_POST['action'])) {
-        if ($_POST['action'] === "add_payment") {
-            $membership_id = $_POST['membership_id'];
-            $payment_date = $_POST['payment_date'];
-            $amount = $_POST['amount'];
-            $payment_method = $_POST['payment_method'];
+  if (isset($_POST['action'])) {
+    if ($_POST['action'] === "add_payment") {
+      $membership_id = $_POST['membership_id'];
+      $payment_date = $_POST['payment_date'];
+      $amount = $_POST['amount'];
+      $payment_method = $_POST['payment_method'];
 
-            // Vérifier si l'adhésion existe
-            $check = $conn->prepare("SELECT membership_id FROM memberships WHERE membership_id = ?");
-            $check->bind_param("i", $membership_id);
-            $check->execute();
-            $check_result = $check->get_result();
+      // Vérifier si l'adhésion existe
+      $check = $conn->prepare("SELECT membership_id FROM memberships WHERE membership_id = ?");
+      $check->bind_param("i", $membership_id);
+      $check->execute();
+      $check_result = $check->get_result();
 
-            if ($check_result->num_rows === 0) {
-                $message = "❌ Erreur : cette adhésion n'existe pas.";
-            } else {
-                $stmt = $conn->prepare("INSERT INTO payments (membership_id, payment_date, amount, payment_method) VALUES (?, ?, ?, ?)");
-                $stmt->bind_param("isds", $membership_id, $payment_date, $amount, $payment_method);
+      if ($check_result->num_rows === 0) {
+        $message = "❌ Erreur : cette adhésion n'existe pas.";
+      } else {
+        $stmt = $conn->prepare("INSERT INTO payments (membership_id, payment_date, amount, payment_method) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isds", $membership_id, $payment_date, $amount, $payment_method);
 
-                if ($stmt->execute()) {
-                    $message = "✅ Paiement ajouté avec succès.";
-                } else {
-                    $message = "❌ Erreur : " . $stmt->error;
-                }
-                $stmt->close();
-            }
-            $check->close();
-        } elseif ($_POST['action'] === "edit_payment") {
-            $payment_id = $_POST['payment_id'];
-            $membership_id = $_POST['membership_id'];
-            $payment_date = $_POST['payment_date'];
-            $amount = $_POST['amount'];
-            $payment_method = $_POST['payment_method'];
-
-            $stmt = $conn->prepare("UPDATE payments SET membership_id=?, payment_date=?, amount=?, payment_method=? WHERE payment_id=?");
-            $stmt->bind_param("isdsi", $membership_id, $payment_date, $amount, $payment_method, $payment_id);
-            
-            if ($stmt->execute()) {
-                $message = "✅ Paiement modifié avec succès.";
-            } else {
-                $message = "❌ Erreur : " . $stmt->error;
-            }
-            $stmt->close();
+        if ($stmt->execute()) {
+          $message = "✅ Paiement ajouté avec succès.";
+        } else {
+          $message = "❌ Erreur : " . $stmt->error;
         }
+        $stmt->close();
+      }
+      $check->close();
+    } elseif ($_POST['action'] === "edit_payment") {
+      $payment_id = $_POST['payment_id'];
+      $membership_id = $_POST['membership_id'];
+      $payment_date = $_POST['payment_date'];
+      $amount = $_POST['amount'];
+      $payment_method = $_POST['payment_method'];
+
+      $stmt = $conn->prepare("UPDATE payments SET membership_id=?, payment_date=?, amount=?, payment_method=? WHERE payment_id=?");
+      $stmt->bind_param("isdsi", $membership_id, $payment_date, $amount, $payment_method, $payment_id);
+
+      if ($stmt->execute()) {
+        $message = "✅ Paiement modifié avec succès.";
+      } else {
+        $message = "❌ Erreur : " . $stmt->error;
+      }
+      $stmt->close();
+    } elseif ($_POST['action'] === "supprimer_payment") {
+
+      $payment_id = isset($_POST['payment_id']) ? intval($_POST['payment_id']) : 0;
+
+      if ($payment_id > 0) {
+          // Prepare the DELETE query
+          $stmt = $conn->prepare("DELETE FROM payments WHERE payment_id = ?");
+          $stmt->bind_param("i", $payment_id);
+  
+          if ($stmt->execute()) {
+              // Optionally set a success message
+              $message = "Le paiement a été supprimé avec succès.";
+          } else {
+              // Optionally set an error message
+              $message = "Erreur lors de la suppression du paiement.";
+          }
+  
+          $stmt->close();
+      } else {
+        $message = "ID de paiement invalide.";
+      }
     }
+
+  }
 }
 
-// Traitement de la suppression
-if (isset($_GET['delete'])) {
-    $payment_id = $_GET['delete'];
-    $stmt = $conn->prepare("DELETE FROM payments WHERE payment_id = ?");
-    $stmt->bind_param("i", $payment_id);
-    if ($stmt->execute()) {
-        $message = "✅ Paiement supprimé avec succès.";
-    } else {
-        $message = "❌ Erreur : " . $stmt->error;
-    }
-    $stmt->close();
-}
+
 
 // Récupération des paiements existants
 $payments = $conn->query("
@@ -337,15 +349,15 @@ $memberships_for_edit = $conn->query("
       <div class="main-panel">
         <div class="content-wrapper fade-in">
           <?php if (!empty($message)) { ?>
-              <div
-                class="alert <?= strpos($message, '✅') !== false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show"
-                style="position:absolute; right:25px;" role="alert">
-                <?= htmlspecialchars($message) ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-            <?php } ?>
+            <div
+              class="alert <?= strpos($message, '✅') !== false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show"
+              style="position:absolute; right:25px;" role="alert">
+              <?= htmlspecialchars($message) ?>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          <?php } ?>
           <div class="header">
             <h1 class="header-title">Paiement</h1>
           </div>
@@ -358,7 +370,7 @@ $memberships_for_edit = $conn->query("
 
           <!-- Modal add payment -->
           <?php
-          $addModals ='';
+          $addModals = '';
           $addModals .= '
           <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -377,7 +389,7 @@ $memberships_for_edit = $conn->query("
                           <label class="form-label">Adhésion</label>
                           <select name="membership_id" id="membership_id" class="form-control form-control-sm" required>
                             <option value="">-- Sélectionner une adhésion --</option>';
-         
+
           while ($m = $memberships->fetch_assoc()) {
             $addModals .= '<option value="' . $m['membership_id'] . '">'
               . htmlspecialchars($m['first_name'] . " " . $m['last_name'] . " - " . $m['subscription_name']) . '</option>';
@@ -430,7 +442,7 @@ $memberships_for_edit = $conn->query("
           </div>';
           ?>
 
-       <div class="table-responsive rounded mt-3 ">
+          <div class="table-responsive rounded mt-3 ">
             <table class="table bg-white " id="paymentsTable">
               <thead class="thead-dark">
                 <tr>
@@ -469,22 +481,49 @@ $memberships_for_edit = $conn->query("
                       </td>
                       <td>
                         <div class="action-buttons">
-                            <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                              data-bs-target="#editModal<?= $row['payment_id'] ?>">
-                              <i class="bi bi-pencil-square"></i>
+                          <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#editModal<?= $row['payment_id'] ?>">
+                            <i class="bi bi-pencil-square"></i>
+                          </button>
+                          <form method="POST" style="display: inline;">
+                            <input type="hidden" name="action" value="supprimer_client">
+                            <input type="hidden" name="id" value="<?= $row['payment_id'] ?>">
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                              data-bs-target="#deleteModal<?= $row['payment_id'] ?>">
+                              <i class="bi bi-trash"></i>
                             </button>
-                            <form method="POST" style="display: inline;">
-                              <input type="hidden" name="action" value="supprimer_client">
-                              <input type="hidden" name="id" value="<?= $row['payment_id'] ?>">
-                              <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal<?= $row['payment_id'] ?>">
-                                <i class="bi bi-trash"></i>
-                              </button>
-                            </form>
+                          </form>
                         </div>
                       </td>
                     </tr>
                     <?php
+                    //dalete modals memeberships
+                    $modals .= '
+                     <div class="modal fade" id="deleteModal' . $row['payment_id'] . '" tabindex="-1" aria-labelledby="deleteModalLabel' . $row['payment_id'] . '" aria-hidden="true">
+                       <div class="modal-dialog">
+                         <form method="POST" class="modal-content">
+                           <input type="hidden" name="action" value="supprimer_payment">
+                           <input type="hidden" name="payment_id" value="' . htmlspecialchars($row['payment_id']) . '">
+
+                           <div class="modal-header">
+                             <h5 class="modal-title" id="deleteModalLabel' . $row['payment_id'] . '">Supprimer le Paiement</h5>
+                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                           </div>
+
+                           <div class="modal-body">
+                             Êtes-vous sûr de vouloir <strong>supprimer</strong> ce paiement de 
+                             <strong>' . htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) . '</strong> ?
+                           </div>
+
+                           <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                             <button type="submit" class="btn btn-danger">Supprimer</button>
+                           </div>
+                         </form>
+                       </div>
+                     </div>';
+
+
                     // edit modal
                     $modals .= '
                                     <div class="modal fade" id="editModal' . $row['payment_id'] . '" tabindex="-1" aria-labelledby="editModalLabel' . $row['payment_id'] . '" aria-hidden="true">
@@ -536,6 +575,8 @@ $memberships_for_edit = $conn->query("
                                         </div>
                                     </div>
                                     </div>';
+
+
                     ?>
                   <?php endwhile; ?>
                 <?php else: ?>
@@ -547,7 +588,7 @@ $memberships_for_edit = $conn->query("
             </table>
           </div>
           <nav class="d-flex justify-content-center mt-3" aria-label="Page navigation">
-              <ul class="pagination" id="pagination"></ul>
+            <ul class="pagination" id="pagination"></ul>
           </nav>
 
         </div>
@@ -555,11 +596,11 @@ $memberships_for_edit = $conn->query("
     </div>
   </div>
   <!-- show all modals -->
- <?= $modals ?>
- <?= $addModals ?>
- 
+  <?= $modals ?>
+  <?= $addModals ?>
 
- <script>
+
+  <script>
     const rowsPerPage = 4;
     const tableBody = document.getElementById("paymentsTableBody");
     const allRows = Array.from(tableBody.querySelectorAll("tr"));

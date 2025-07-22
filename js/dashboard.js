@@ -20,6 +20,7 @@
           labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
           datasets: [
             {
+              //data:  json_encode($revenues) ,
               data: ["200", "480", "700", "600", "620", "350", "380", "350", "850", "600", "650", "350", "590", "350", "620", "500", "990", "780", "650"],
               borderColor: ['black'],
               borderWidth: 1,

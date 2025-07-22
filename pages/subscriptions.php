@@ -232,7 +232,8 @@ require '../database/db.php';
 $message = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
   switch ($_POST['action']) {
-    case "ajouter":
+
+    case "ajouter_abonnement":
       if (!empty($_POST['name']) && !empty($_POST['price']) && !empty($_POST['duration_months'])) {
         $name = $_POST['name'];
         $price = floatval($_POST['price']);
@@ -250,37 +251,46 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
       }
       break;
 
-    case "supprimer":
-      if (!empty($_POST['subscription_id'])) {
-        $id = intval($_POST['subscription_id']);
+    case "supprimer_abonnement":
 
-        // Vérifie s'il y a des adhésions liées à cet abonnement
-        $stmt = $conn->prepare("SELECT COUNT(*) FROM memberships WHERE subscription_id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $stmt->bind_result($count);
-        $stmt->fetch();
-        $stmt->close();
+      $subscription_id = intval($_POST['subscription_id']);
 
-        if ($count > 0) {
-          $message = "❌ Impossible de supprimer cet abonnement : il est lié à des adhésions.";
-        } else {
-          $stmt = $conn->prepare("DELETE FROM subscriptions WHERE subscription_id = ?");
-          $stmt->bind_param("i", $id);
-          if ($stmt->execute()) {
-            $message = "✅ Abonnement supprimé.";
+      if ($subscription_id > 0) {
+        // Start transaction
+        $conn->begin_transaction();
+
+        try {
+          // Step 1: Delete related memberships first
+          $stmt1 = $conn->prepare("DELETE FROM memberships WHERE subscription_id = ?");
+          $stmt1->bind_param("i", $subscription_id);
+          $stmt1->execute();
+          $stmt1->close();
+
+          // Step 2: Delete the subscription
+          $stmt2 = $conn->prepare("DELETE FROM subscriptions WHERE subscription_id = ?");
+          $stmt2->bind_param("i", $subscription_id);
+
+          if ($stmt2->execute()) {
+            $conn->commit(); // Commit transaction
+            $message = "✅ Abonnement supprimé avec succès.";
           } else {
-            $message = "❌ Erreur lors de la suppression : " . $stmt->error;
+            $conn->rollback(); // Rollback on error
+            $message = "❌ Erreur lors de la suppression de l'abonnement : " . $stmt2->error;
           }
-          $stmt->close();
+
+          $stmt2->close();
+        } catch (Exception $e) {
+          $conn->rollback();
+          $message = "❌ Exception lors de la suppression : " . $e->getMessage();
         }
       } else {
-        $message = "❌ ID de l'abonnement manquant.";
+        $message = "❌ ID invalide.";
       }
+
       break;
 
 
-    case "modifier":
+    case "modifier_abonnement":
       if (!empty($_POST['subscription_id']) && !empty($_POST['name']) && !empty($_POST['price']) && !empty($_POST['duration_months'])) {
         $id = intval($_POST['subscription_id']);
         $name = $_POST['name'];
@@ -300,7 +310,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
       break;
   }
 }
-
 // Récupération des données
 $result = $conn->query("SELECT * FROM subscriptions");
 ?>
@@ -319,6 +328,16 @@ $result = $conn->query("SELECT * FROM subscriptions");
       <!--  -->
       <div class="main-panel">
         <div class="content-wrapper fade-in">
+          <?php if (!empty($message)) { ?>
+            <div
+              class="alert <?= strpos($message, '✅') !== false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show"
+              style="position:absolute; right:25px;" role="alert">
+              <?= htmlspecialchars($message) ?>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          <?php } ?>
           <div class="header">
             <h1 class="header-title">Abonnements</h1>
           </div>
@@ -328,8 +347,8 @@ $result = $conn->query("SELECT * FROM subscriptions");
               <i class="bi bi-plus fs-3"></i> Ajouter Abonnement
             </button>
           </div>
-        
-          <!-- Add modal packs -->
+
+          <!-- Add modal pack -->
           <?php
           $addModals = "";
           $addModals .= '
@@ -337,7 +356,7 @@ $result = $conn->query("SELECT * FROM subscriptions");
               <div class="modal-dialog">
                 <div class="modal-content">
                   <form method="POST">
-                    <input type="hidden" name="action" value="ajouter">
+                    <input type="hidden" name="action" value="ajouter_abonnement">
                     <div class="modal-header">
                       <h5 class="modal-title" id="addSubscriptionModalLabel">Ajouter un Pack</h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
@@ -444,13 +463,40 @@ $result = $conn->query("SELECT * FROM subscriptions");
                     </td>
                   </tr>
                   <?php
-                  // On prépare la modale pour cet abonnement
+                  // delete modal pack
+                  $modals .=
+                    '<div class="modal fade" id="deleteModal' . $row['subscription_id'] . '" tabindex="-1" aria-labelledby="deleteModalLabel' . $row['subscription_id'] . '" aria-hidden="true">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <form method="POST">
+                                    <input type="hidden" name="action" value="supprimer_abonnement">
+                                    <input type="hidden" name="subscription_id" value="' . htmlspecialchars($row['subscription_id']) . '">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="deleteModalLabel' . $row['subscription_id'] . '">Supprimer l\'abonnement</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <p>Êtes-vous sûr de vouloir supprimer l\'abonnement <strong>' . htmlspecialchars($row['name']) . '</strong> ?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                      <button type="submit" class="btn btn-danger">Supprimer</button>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                            ';
+
+
+
+                  // update modal pack
                   $modals .= '
                         <div class="modal fade" id="editModal' . $row['subscription_id'] . '" tabindex="-1" aria-labelledby="editModalLabel' . $row['subscription_id'] . '" aria-hidden="true">
                           <div class="modal-dialog">
                             <div class="modal-content">
                               <form method="POST">
-                                <input type="hidden" name="action" value="modifier">
+                                <input type="hidden" name="action" value="modifier_abonnement">
                                 <input type="hidden" name="subscription_id" value="' . htmlspecialchars($row['subscription_id']) . '">
                                 <div class="modal-header">
                                   <h5 class="modal-title" id="editModalLabel' . $row['subscription_id'] . '">Modifier l\'abonnement</h5>

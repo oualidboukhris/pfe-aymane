@@ -13,6 +13,7 @@ session_start();
   <!-- endinject -->
   <!-- Plugin css for this page -->
   <link rel="stylesheet" href="../vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" type="text/css" href="../js/select.dataTables.min.css">
   <!-- End plugin css for this page -->
@@ -177,6 +178,73 @@ session_start();
   </style>
 </head>
 
+
+<?php
+require '../database/db.php';
+if (!empty($_SESSION["username"]) && !empty($_SESSION["user_id"])) {
+
+  // Total Customers
+  $sqlCustomers = "SELECT COUNT(*) AS total_customers FROM customers";
+  $resultCustomers = $conn->query($sqlCustomers);
+  $totalCustomers = ($resultCustomers && $row = $resultCustomers->fetch_assoc()) ? $row['total_customers'] : 0;
+
+  // Active Memberships 
+  $sqlMemberships = "SELECT COUNT(*) AS active_memberships FROM memberships WHERE status = 'actif'";
+  $resultMemberships = $conn->query($sqlMemberships);
+  $activeMemberships = ($resultMemberships && $row = $resultMemberships->fetch_assoc()) ? $row['active_memberships'] : 0;
+
+  // Total Revenue This Month
+  $sqlRevenue = "SELECT SUM(amount) AS total_revenue FROM payments WHERE MONTH(payment_date) = MONTH(CURRENT_DATE()) AND YEAR(payment_date) = YEAR(CURRENT_DATE())";
+  $result = $conn->query($sqlRevenue);
+  $totalRevenue = 0;
+
+  if ($result && $row = $result->fetch_assoc()) {
+    $totalRevenue = $row['total_revenue'];
+  }
+
+  // Most Popular Subscription Plan
+  $sqlPopular = "SELECT subscription_id, COUNT(*) AS count FROM memberships GROUP BY subscription_id ORDER BY count DESC LIMIT 1";
+  $resultPopular = $conn->query($sqlPopular);
+  $popularPlan = "None";
+
+  if ($resultPopular && $row = $resultPopular->fetch_assoc()) {
+    $subId = $row['subscription_id'];
+
+    // Get the subscription name
+    $subNameResult = $conn->query("SELECT name FROM subscriptions WHERE subscription_id = $subId");
+    if ($subNameResult && $subRow = $subNameResult->fetch_assoc()) {
+      $popularPlan = $subRow['name'];
+    } else {
+      $popularPlan = "Subscription ID: $subId";
+    }
+  }
+
+  //Data shart Monthly Revenue (last 6 months)
+  $sql = "
+      SELECT DATE_FORMAT(payment_date, '%Y-%m') AS month, SUM(amount) AS total 
+      FROM payments
+      WHERE payment_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+      GROUP BY month
+      ORDER BY month
+    ";
+
+  $result = $conn->query($sql);
+
+  $months = [];
+  $revenues = [];
+
+  while ($row = $result->fetch_assoc()) {
+    $months[] = $row['month'];
+    $revenues[] = (float) $row['total'];
+  }
+
+} else {
+  header("Location:../index.php");
+}
+
+
+?>
+
 <body>
   <div class="container-scroller">
 
@@ -188,13 +256,13 @@ session_start();
       <!-- partial -->
       <!-- partial:partials/_sidebar.html -->
       <?php include '../container/sidebar.html'; ?>
-      <?php require '../database/db.php' ?>
+
 
       <!--  -->
       <div class="main-panel">
         <div class="content-wrapper fade-in">
           <div class="dashboard-header">
-            <h1 class="dashboard-title">Bienvenue sur Fitness</h1>
+            <h1 class="dashboard-title">Bienvenue <?php echo $_SESSION["username"] ?> sur Fitness</h1>
             <p class="dashboard-subtitle">Votre tableau de bord de gestion de salle de sport</p>
           </div>
 
@@ -202,29 +270,27 @@ session_start();
             <div class="col-md-3 mb-4 stretch-card transparent">
               <div class="card card-light">
                 <div class="card-body">
-                  <i class="ti-calendar stats-icon text-dark"></i>
-                  <p class="mb-4 text-dark">Réservations du jour</p>
-                  <p class="fs-30 text-dark">4</p>
-
+                  <i class="bi bi-people-fill fs-30"></i>
+                  <p class="mb-4 text-dark">Adhésion actives</p>
+                  <p class="fs-30 text-dark"><?= $activeMemberships ?></p>
                 </div>
               </div>
             </div>
             <div class="col-md-3 mb-4 stretch-card transparent">
               <div class="card card-light">
                 <div class="card-body">
-                  <i class="ti-book stats-icon text-dark"></i>
-                  <p class="mb-4 text-dark">Total des réservations</p>
-                  <p class="fs-30 mb-2 text-dark">10</p>
+                  <i class="bi bi-person-fill fs-30"></i>
+                  <p class="mb-4 text-dark">Total des clients</p>
+                  <p class="fs-30 mb-2 text-dark"><?= $totalCustomers ?></p>
                 </div>
               </div>
             </div>
-
             <div class="col-md-3 mb-4 stretch-card transparent">
               <div class="card card-light">
                 <div class="card-body">
-                  <i class="ti-calendar stats-icon text-dark"></i>
-                  <p class="mb-4 text-dark">Nombre de séances</p>
-                  <p class="fs-30 mb-2 text-dark">34</p>
+                  <i class="bi bi-calendar-fill fs-30"></i>
+                  <p class="mb-4 text-dark">Plan d'abonnement le plus populaire</p>
+                  <p class="fs-30 mb-2 text-dark"><?= $popularPlan ?></p>
                   <!-- <p class="stats-change text-dark">+2.00% (30 jours)</p> -->
                 </div>
               </div>
@@ -232,10 +298,9 @@ session_start();
             <div class="col-md-3 mb-4 stretch-card transparent">
               <div class="card card-light">
                 <div class="card-body">
-                  <i class="ti-user stats-icon text-dark"></i>
-                  <p class="mb-4 text-dark">Nombre de clients</p>
-                  <p class="fs-30 mb-2 text-dark">4</p>
-                  <!-- <p class="stats-change">+0.22% (30 jours)</p> -->
+                  <i class="bi bi-currency-dollar fs-30 "></i>
+                  <p class="mb-4 text-dark "> Total des recettes du mois </p>
+                  <p class="fs-30 mb-2 text-dark"><?= number_format($totalRevenue, 0) ?> MAD </p>
                 </div>
               </div>
             </div>
@@ -244,11 +309,12 @@ session_start();
             <div class="col-md-12 grid-margin mt-4 justify-content-center stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <canvas id="order-chart"></canvas>
+                  <canvas id="monthlyRevenueChart"></canvas>
                 </div>
               </div>
             </div>
           </div>
+
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
               <div class="card">
@@ -268,13 +334,13 @@ session_start();
                       </thead>
                       <tbody id="membershipsTableBody">
                         <?php
-                        // Récupération des adhésions
                         $adhesions = $conn->query("
-                          SELECT m.*, c.first_name, c.last_name, s.name AS subscription_name
-                          FROM memberships m
-                          JOIN customers c ON m.customer_id = c.customer_id
-                          JOIN subscriptions s ON m.subscription_id = s.subscription_id
-                          ");
+                            SELECT m.*, c.first_name, c.last_name, s.name AS subscription_name
+                            FROM memberships m
+                            JOIN customers c ON m.customer_id = c.customer_id
+                            JOIN subscriptions s ON m.subscription_id = s.subscription_id
+                            ");
+
                         $modals = '';
                         if ($adhesions->num_rows > 0):
                           // Pour les listes déroulantes dans les modales, on récupère tous les clients et abonnements une fois
@@ -325,12 +391,12 @@ session_start();
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
   </div>
+
+
 
 
   <script src="../vendors/js/vendor.bundle.base.js"></script>
@@ -345,8 +411,90 @@ session_start();
   <script src="../js/template.js"></script>
   <script src="../js/settings.js"></script>
   <script src="../js/todolist.js"></script>
-  <script src="../js/dashboard.js"></script>
+  <!-- <script src="../js/dashboard.js"></script> -->
   <script src="../js/jquery.cookie.js" type="text/javascript"></script>
+  <script>
+    (function ($) {
+      'use strict';
+      $(function () {
+        if ($("#monthlyRevenueChart").length) {
+          const canvas = document.getElementById('monthlyRevenueChart');
+          const ctx = canvas.getContext('2d');
+
+          // Create a vertical linear gradient for "Orders" dataset
+          const gradient1 = ctx.createLinearGradient(0, 0, 0, 500);
+          gradient1.addColorStop(0, 'rgba(0, 0, 0)'); // Top: semi-transparent
+          gradient1.addColorStop(1, 'rgba(0, 0, 0,0.1)');
+
+          const gradient2 = ctx.createLinearGradient(0, 0, 0, 500);
+          gradient2.addColorStop(0, 'rgba(60, 66,77)'); // Top: semi-transparent
+          gradient2.addColorStop(1, 'rgba(60, 66,77,0.1)');
+
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: <?= json_encode($months) ?>,
+              datasets: [
+                {
+                  data:  <?= json_encode($revenues) ?> ,
+                  borderColor: ['black'],
+                  borderWidth: 1,
+                  fill: true,
+                  label: "Revenue (MAD)",
+                  pointRadius: 0,
+                  backgroundColor: gradient1 // 👈 Gradient applied here
+                },
+                
+              ]
+            },
+          
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              elements: {
+                line: {
+                  tension: .4
+                }
+              },
+              scales: {
+                x: {
+                  border: { display: false },
+                  grid: {
+                    display: false,
+                    drawTicks: true,
+                    color: "rgba(0, 0, 0, 0)",
+                  },
+                  ticks: {
+                    display: true,
+                    color: "#6C7383"
+                  }
+                },
+                y: {
+                  border: { display: false },
+                  grid: { display: true },
+                  ticks: {
+                    color: "#6C7383",
+                    stepSize: 200
+                  }
+                }
+              },
+              plugins: {
+                legend: {
+                  display: false,
+                  labels: {
+                    color: 'rgb(255, 99, 132)'
+                  }
+                }
+              }
+            }
+          });
+        }
+
+      
+    
+      });
+    })(jQuery);
+  </script>
 </body>
 
 </html>
